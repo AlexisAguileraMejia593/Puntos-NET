@@ -1,0 +1,57 @@
+﻿@model ML.Usuario
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" href=" https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<script src=" https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
+<div class="text-center">
+    <h2>Registros de la tabla</h2>
+    <h5>Usuario</h5>
+</div>
+<hr />
+<a href="@Url.Action("Form","Usuarios")" class="btn btn-success">Agregar </a>
+@if (Model.Usuarios.Count > 0)
+{
+    <table class="table table-bordered">
+        <thead>
+            <!-- On rows -->
+            <tr class="bg-warning">
+                <th>Editar</th>
+                <th>Nombre</th>
+                <th>Apellidos</th>
+                <th>UserName</th>
+                <th>Detalles</th>
+                <th>Eliminar</th>
+                <!-- On cells (`td` or `th`) -->
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (ML.Usuario usuarios in Model.Usuarios)
+            {
+                <tr>
+                    <td><a class="btn btn-warning" href="@Url.Action("Form", "Usuarios", new { IdUsuario = usuarios.IdUsuario })"><i class="fa-solid fa-pencil fa-bounce" style="color: #332774;"></i></a></td>
+                    <td>@usuarios.Nombre</td>
+                    <td>@usuarios.ApellidoPaterno @usuarios.ApellidoMaterno</td>
+                    <td>@usuarios.UserName</td>
+                    <td>
+                        <button type="button" class="btn btn-info"><i class="fa-solid fa-circle-info"></i></button>
+                    </td>
+
+                    <td><a class="btn btn-danger" href="@Url.Action("Delete", "Usuarios", new { IdUsuario = usuarios.IdUsuario,})" onclick="return confirm('Estas seguro de que quieres eliminar este registro');"> <i class="fa-solid fa-trash fa-beat" style="color: black;"></i></a></td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-warning" role="alert">
+        No existen registros en la tabla :(
+    </div>
+}
+@section Scripts{
+    <script type="text/javascript">
+
+    </script>
+}
