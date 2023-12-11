@@ -35,7 +35,7 @@
                     <td>@usuarios.ApellidoPaterno @usuarios.ApellidoMaterno</td>
                     <td>@usuarios.UserName</td>
                     <td>
-                        <button type="button" class="btn btn-info"><i class="fa-solid fa-circle-info"></i></button>
+                        <button type="button" class="btn btn-info" onclick="GetAll()"><i class="fa-solid fa-circle-info"></i></button>
                     </td>
 
                     <td><a class="btn btn-danger" href="@Url.Action("Delete", "Usuarios", new { IdUsuario = usuarios.IdUsuario,})" onclick="return confirm('Estas seguro de que quieres eliminar este registro');"> <i class="fa-solid fa-trash fa-beat" style="color: black;"></i></a></td>
@@ -52,6 +52,53 @@ else
 }
 @section Scripts{
     <script type="text/javascript">
+        function GetAll() {
+            $.ajax({
+                type: 'GET',
+                    url: 'http://localhost:5257/api/Usuarios/GetAll',
+                dataType: 'JSON',
+                data: "",
+                success: function (result) { // codigo de estado de 200 a 299
+                    $.each(result.Objects, function (i, empleado) {
+                        var fila =
+                            "<tr>"
+                            + "<td>" + '<a href="#" class = "btn btn-warning" onclick="Formulario(' + empleado.IdEmpleado + ')">' + "EDITAR" + '</a>' + "</td>"
+                            + "<td>" + empleado.IdEmpleado + "</td>"
+                            + "<td>" + empleado.NumeroNomina + "</td>"
+                            + "<td>" + empleado.Nombre + "</td>"
+                            + "<td>" + empleado.ApellidoPaterno + "</td>"
+                            + "<td>" + empleado.ApellidoMaterno + "</td>"
+                            + "<td>" + empleado.Estado.IdEntidad + "</td>"
+                            + "<td>" + empleado.Estado.Estado + "</td>"
+                            + "<td>" + '<a href="#" class = "btn btn-danger" onclick="Delete(' + empleado.IdEmpleado + ')">' + "ELIMINAR" + '</a>' + "</td>"
+                            + "</tr>";
 
+                        $("#tblEmpleado tbody").append(fila);
+                    });
+                },
+                error: function (result) {  // codigo de estado 400 o 500
+                    alert("Ocurrio un error al realizar la consulta: " + result.responseJSON.ErrorMessage);
+                }
+            });
+        };
+        function GetById(idEmpleado) {
+            $.ajax({
+                type: 'GET',
+                url: 'http://localhost:5257/api/Usuarios/GetById' + idEmpleado,
+                dataType: 'JSON',
+                data: "",
+                success: function (result) {
+                    $('#txtIdEmpleado').val(result.Object.IdEmpleado);
+                    $('#txtNumeroNomina').val(result.Object.NumeroNomina);
+                    $('#txtNombre').val(result.Object.Nombre);
+                    $('#txtApellidoPaterno').val(result.Object.ApellidoPaterno);
+                    $('#txtApellidoMaterno').val(result.Object.ApellidoMaterno);
+                    $('#ddlEntidadFederativa').val(result.Object.Estado.IdEntidad);
+                },
+                error: function (result) {  // codigo de estado 400 o 500
+                    alert("Ocurrio un error al realizar la consulta: " + result.responseJSON.ErrorMessage);
+                }
+            });
+        };
     </script>
 }
