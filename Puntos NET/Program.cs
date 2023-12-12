@@ -1,3 +1,7 @@
+using Microsoft.AspNetCore.Mvc;
+using NuGet.Protocol.Core.Types;
+using System;
+
 namespace Puntos_NET
 {
     public class Program
@@ -15,14 +19,12 @@ namespace Puntos_NET
 			});
 
 			// Add services to the container.
-			builder.Services.AddControllersWithViews();
+                var app = builder.Build();
+            app.UseStaticFiles();
+            app.UseSession();
 
-            var app = builder.Build();
-			app.UseStaticFiles();
-			app.UseSession();
-
-			// Configure the HTTP request pipeline.
-			if (!app.Environment.IsDevelopment())
+            // Configure the HTTP request pipeline.
+            if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
             }

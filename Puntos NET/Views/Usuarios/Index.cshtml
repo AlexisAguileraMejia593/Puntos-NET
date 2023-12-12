@@ -5,6 +5,11 @@
 }
 <link rel="stylesheet" href=" https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 <script src=" https://use.fontawesome.com/releases/v6.1.0/js/all.js" crossorigin="anonymous"></script>
+<style>
+    table tbody tr:hover {
+        background-color: blue;
+    }
+</style>
 <div class="text-center">
     <h2>Registros de la tabla</h2>
     <h5>Usuario</h5>
@@ -13,7 +18,7 @@
 <a href="@Url.Action("Form","Usuarios")" class="btn btn-success">Agregar </a>
 @if (Model.Usuarios.Count > 0)
 {
-    <table class="table table-bordered">
+    <table class="table table-bordered" id="example">
         <thead>
             <!-- On rows -->
             <tr class="bg-warning">
@@ -26,19 +31,19 @@
                 <!-- On cells (`td` or `th`) -->
             </tr>
         </thead>
-        <tbody>
+        <tbody id="cuerpotabla">
             @foreach (ML.Usuario usuarios in Model.Usuarios)
             {
-                <tr>
-                    <td><a class="btn btn-warning" href="@Url.Action("Form", "Usuarios", new { IdUsuario = usuarios.IdUsuario })"><i class="fa-solid fa-pencil fa-bounce" style="color: #332774;"></i></a></td>
-                    <td>@usuarios.Nombre</td>
-                    <td>@usuarios.ApellidoPaterno @usuarios.ApellidoMaterno</td>
-                    <td>@usuarios.UserName</td>
-                    <td>
-                        <button type="button" class="btn btn-info" onclick="GetAll()"><i class="fa-solid fa-circle-info"></i></button>
+                <tr data-idusuario="@usuarios.IdUsuario">
+                    <td id="cuerpotabla"><a class="btn btn-warning" href="@Url.Action("Form", "Usuarios", new { IdUsuario = usuarios.IdUsuario })"><i class="fa-solid fa-pencil fa-bounce" style="color: #332774;"></i></a></td>
+                    <td id="cuerpotabla">@usuarios.Nombre</td>
+                    <td id="cuerpotabla">@usuarios.ApellidoPaterno @usuarios.ApellidoMaterno</td>
+                    <td id="cuerpotabla">@usuarios.UserName</td>
+                    <td id="cuerpotabla">
+                        <a class="btn btn-info" onclick="GetById(@usuarios.IdUsuario)"><i class="fa-solid fa-circle-info"></i></a>
                     </td>
 
-                    <td><a class="btn btn-danger" href="@Url.Action("Delete", "Usuarios", new { IdUsuario = usuarios.IdUsuario,})" onclick="return confirm('Estas seguro de que quieres eliminar este registro');"> <i class="fa-solid fa-trash fa-beat" style="color: black;"></i></a></td>
+                    <td id="cuerpotabla"><a class="btn btn-danger" href="@Url.Action("Delete", "Usuarios", new { IdUsuario = usuarios.IdUsuario})" onclick="return confirm('Estas seguro de que quieres eliminar este registro');"> <i class="fa-solid fa-trash fa-beat" style="color: black;"></i></a></td>
                 </tr>
             }
         </tbody>
@@ -50,55 +55,93 @@ else
         No existen registros en la tabla :(
     </div>
 }
+
+<div class="modal" id="formulario" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalles del Usuario</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="Cerrar()" data-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-5">
+
+            <div class="modal" id="myModal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Detalle</h4>
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <h5>
+                                Acción completada con éxito
+                            </h5>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" value="Regresar" data-dismiss="modal">Regresar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 @section Scripts{
     <script type="text/javascript">
-        function GetAll() {
-            $.ajax({
-                type: 'GET',
-                    url: 'http://localhost:5257/api/Usuarios/GetAll',
-                dataType: 'JSON',
-                data: "",
-                success: function (result) { // codigo de estado de 200 a 299
-                    $.each(result.Objects, function (i, empleado) {
-                        var fila =
-                            "<tr>"
-                            + "<td>" + '<a href="#" class = "btn btn-warning" onclick="Formulario(' + empleado.IdEmpleado + ')">' + "EDITAR" + '</a>' + "</td>"
-                            + "<td>" + empleado.IdEmpleado + "</td>"
-                            + "<td>" + empleado.NumeroNomina + "</td>"
-                            + "<td>" + empleado.Nombre + "</td>"
-                            + "<td>" + empleado.ApellidoPaterno + "</td>"
-                            + "<td>" + empleado.ApellidoMaterno + "</td>"
-                            + "<td>" + empleado.Estado.IdEntidad + "</td>"
-                            + "<td>" + empleado.Estado.Estado + "</td>"
-                            + "<td>" + '<a href="#" class = "btn btn-danger" onclick="Delete(' + empleado.IdEmpleado + ')">' + "ELIMINAR" + '</a>' + "</td>"
-                            + "</tr>";
-
-                        $("#tblEmpleado tbody").append(fila);
-                    });
-                },
-                error: function (result) {  // codigo de estado 400 o 500
-                    alert("Ocurrio un error al realizar la consulta: " + result.responseJSON.ErrorMessage);
-                }
+        $(document).ready(function () {
+            $('#cuerpotabla tr').click(function () {
+                var idUsuario = $(this).data('idusuario');
+                    window.location.href = '@Url.Action("Form", "Usuarios")?IdUsuario=' + idUsuario;
             });
-        };
-        function GetById(idEmpleado) {
+
+            $('#cuerpotabla tr a.btn').click(function (e) {
+                e.stopPropagation();
+            });
+        });
+
+        function GetById(idUsuarios) {
             $.ajax({
                 type: 'GET',
-                url: 'http://localhost:5257/api/Usuarios/GetById' + idEmpleado,
+                url: 'http://localhost:5257/api/Usuarios/GetById/' + idUsuarios,
                 dataType: 'JSON',
                 data: "",
                 success: function (result) {
-                    $('#txtIdEmpleado').val(result.Object.IdEmpleado);
-                    $('#txtNumeroNomina').val(result.Object.NumeroNomina);
-                    $('#txtNombre').val(result.Object.Nombre);
-                    $('#txtApellidoPaterno').val(result.Object.ApellidoPaterno);
-                    $('#txtApellidoMaterno').val(result.Object.ApellidoMaterno);
-                    $('#ddlEntidadFederativa').val(result.Object.Estado.IdEntidad);
+                    var detalles = '<ul>';
+                    detalles += '<li>Id Usuario: ' + result.object.idUsuario + '</li>';
+                    detalles += '<li>Nombre: ' + result.object.nombre + '</li>';
+                    detalles += '<li>Apellido Paterno: ' + result.object.apellidoPaterno + '</li>';
+                    detalles += '<li>Apellido Materno: ' + result.object.apellidoMaterno + '</li>';
+                    detalles += '<li>Fecha de Nacimiento: ' + result.object.fechaNacimiento + '</li>';
+                    detalles += '<li>UserName: ' + result.object.userName + '</li>';
+                    detalles += '<li>Password: ' + result.object.password + '</li>';
+                    detalles += '</ul>';
+
+                    $('#formulario .modal-body').html(detalles);
+                    $('#formulario').modal('show');
                 },
-                error: function (result) {  // codigo de estado 400 o 500
+                error: function (result) {
                     alert("Ocurrio un error al realizar la consulta: " + result.responseJSON.ErrorMessage);
                 }
             });
         };
+        function Cerrar() {
+            $('#formulario').modal('hide');
+        }
     </script>
 }

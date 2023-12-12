@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
@@ -7,6 +8,7 @@ namespace WebApi.Controllers
     [ApiController]
     public class Usuarios : ControllerBase
     {
+        [EnableCors("API")]
         [Route("GetAll")]
         [HttpGet]
         public IActionResult GetAll()
@@ -22,6 +24,7 @@ namespace WebApi.Controllers
             }
 
         }
+        [EnableCors("API")]
         [Route("GetById/{idUsuarios?}")]
         [HttpGet]
         public IActionResult GetById(int idUsuarios)
@@ -37,6 +40,7 @@ namespace WebApi.Controllers
                 return NotFound();
             }
         }
+        [EnableCors("API")]
         [Route("Add")]
         [HttpPost]
         public IActionResult Add([FromBody] ML.Usuario usuarios)
@@ -51,6 +55,7 @@ namespace WebApi.Controllers
                 return NotFound();
             }
         }
+        [EnableCors("API")]
         [Route("Delete/{idUsuarios?}")]
         [HttpDelete]
         public IActionResult Delete(int idUsuarios)
